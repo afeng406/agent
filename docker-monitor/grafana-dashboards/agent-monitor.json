@@ -1,0 +1,145 @@
+{
+  "title": "InfiniteChat-Agent 监控面板",
+  "uid": "agent-monitor",
+  "tags": ["agent", "ai"],
+  "timezone": "Asia/Shanghai",
+  "panels": [
+    {
+      "title": "AI 请求总数",
+      "type": "stat",
+      "gridPos": {"x": 0, "y": 0, "w": 4, "h": 4},
+      "targets": [{
+        "expr": "sum(ai_model_requests_total)",
+        "legendFormat": "总请求"
+      }]
+    },
+    {
+      "title": "Token 消耗总计",
+      "type": "stat",
+      "gridPos": {"x": 4, "y": 0, "w": 4, "h": 4},
+      "targets": [{
+        "expr": "sum(ai_model_tokens_total)",
+        "legendFormat": "Total Tokens"
+      }]
+    },
+    {
+      "title": "估算成本 (¥)",
+      "type": "stat",
+      "gridPos": {"x": 8, "y": 0, "w": 4, "h": 4},
+      "targets": [{
+        "expr": "sum(ai_model_tokens_total) * 0.00002",
+        "legendFormat": "成本 (¥)"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyCNY",
+          "decimals": 2
+        }
+      }
+    },
+    {
+      "title": "请求成功率",
+      "type": "stat",
+      "gridPos": {"x": 12, "y": 0, "w": 4, "h": 4},
+      "targets": [{
+        "expr": "sum(ai_model_requests_total{status=\"success\"}) / (sum(ai_model_requests_total{status=\"success\"}) + sum(ai_model_requests_total{status=\"error\"})) * 100",
+        "legendFormat": "成功率"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "color": {"mode": "thresholds"},
+          "thresholds": {"steps": [{"value": 90, "color": "red"}, {"value": 99, "color": "yellow"}, {"value": 100, "color": "green"}]}
+        }
+      }
+    },
+    {
+      "title": "请求趋势（最近1小时）",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 4, "w": 8, "h": 8},
+      "targets": [{
+        "expr": "rate(ai_model_requests_total{status=\"success\"}[5m])",
+        "legendFormat": "成功",
+        "interval": "1m"
+      }, {
+        "expr": "rate(ai_model_requests_total{status=\"error\"}[5m])",
+        "legendFormat": "失败",
+        "interval": "1m"
+      }]
+    },
+    {
+      "title": "Token 消耗趋势（最近1小时）",
+      "type": "timeseries",
+      "gridPos": {"x": 8, "y": 4, "w": 8, "h": 8},
+      "targets": [{
+        "expr": "rate(ai_model_tokens_total{token_type=\"input\"}[5m])",
+        "legendFormat": "Input tokens/s"
+      }, {
+        "expr": "rate(ai_model_tokens_total{token_type=\"output\"}[5m])",
+        "legendFormat": "Output tokens/s"
+      }]
+    },
+    {
+      "title": "响应时间 P50/P95",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 12, "w": 8, "h": 8},
+      "targets": [{
+        "expr": "ai_model_response_duration_seconds{quantile=\"0.5\"}",
+        "legendFormat": "P50"
+      }, {
+        "expr": "ai_model_response_duration_seconds{quantile=\"0.95\"}",
+        "legendFormat": "P95"
+      }]
+    },
+    {
+      "title": "按用户统计的请求数",
+      "type": "barchart",
+      "gridPos": {"x": 8, "y": 12, "w": 8, "h": 8},
+      "targets": [{
+        "expr": "sum by(user_id) (ai_model_requests_total{status=\"success\"})",
+        "legendFormat": "用户 {{user_id}}"
+      }]
+    },
+    {
+      "title": "JVM 内存使用",
+      "type": "gauge",
+      "gridPos": {"x": 0, "y": 20, "w": 4, "h": 4},
+      "targets": [{
+        "expr": "sum(jvm_memory_used_bytes{area=\"heap\"}) / sum(jvm_memory_max_bytes{area=\"heap\"}) * 100",
+        "legendFormat": "堆内存使用率"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "max": 100,
+          "thresholds": {"steps": [{"value": 0, "color": "green"}, {"value": 70, "color": "yellow"}, {"value": 90, "color": "red"}]}
+        }
+      }
+    },
+    {
+      "title": "CPU 使用率",
+      "type": "gauge",
+      "gridPos": {"x": 4, "y": 20, "w": 4, "h": 4},
+      "targets": [{
+        "expr": "system_cpu_usage * 100",
+        "legendFormat": "CPU %"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "max": 100
+        }
+      }
+    },
+    {
+      "title": "HTTP 请求量",
+      "type": "timeseries",
+      "gridPos": {"x": 8, "y": 20, "w": 8, "h": 6},
+      "targets": [{
+        "expr": "rate(http_server_requests_seconds_count[5m])",
+        "legendFormat": "HTTP请求"
+      }]
+    }
+  ]
+}

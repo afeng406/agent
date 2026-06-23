@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: InfiniteChat-Agent
+  profiles:
+    active: prod
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 10010
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    dev.langchain4j.mcp: ERROR
+
+
+langchain4j:
+  community:
+    dashscope:
+      chat-model:
+        model-name: qwen-max
+        api-key:
+      streaming-chat-model:
+        model-name: qwen-max
+        api-key:
+      embedding-model:
+        model-name: text-embedding-v4
+        api-key:
+
+
+bigmodel:
+  api-key:
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
