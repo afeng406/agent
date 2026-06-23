@@ -16,4 +16,4 @@ pgvector:
   table: agent_embedding
 
 rag:
-  docs-path: E:\AgentProject\InfinteChat-Agent\src\main\resources\docs
+  docs-path: /data/docs
